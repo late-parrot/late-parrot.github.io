@@ -4,6 +4,10 @@
     transition: .3s;
 }
 
+html {
+    background-color: #55555a;
+}
+
 body {
     font-family: "Lexend", sans-serif;
     font-weight: 300;
