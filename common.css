@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+* {
+    transition: .3s;
+}
+
+body {
+    font-family: "Lexend", sans-serif;
+    font-weight: 300;
+    margin: 0;
+    height: 100vh;
+    color: #28303E;
+    background-color: #ECF6FE;
+}
+
+.main {
+    background-color: #fefefe;
+    min-height: 100%;
+    width: 80%;
+    position: relative;
+    left: 10%;
+    padding: 150px 100px 30px 100px;
+    box-sizing: border-box;
+}
+
+.main h1 {
+    text-shadow: 3px 2px #B9E6FF;
+    position: relative;
+    margin: 40px 0;
+}
+
+.main h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 2px;
+    right: 50px;
+    height: 2px;
+    background-color: #ddd;
+    box-shadow: 0 4px #B9E6FF;
+}
+
+.main h1 a {
+    text-shadow: none;
+    text-decoration: none;
+    filter: brightness(0) opacity(20%);
+    font-weight: 300;
+    font-size: .8em;
+    position: absolute;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.main a:not(h1 a),
+.footer a {
+    color: #63ADF2;
+    text-decoration: none;
+    position: relative;
+}
+
+.main a:not(h1 a)::after,
+.footer a:not(.cc-link)::after {
+    content: '';
+    background-color: #63ADF2;
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 100%;
+    height: 1px;
+    transition: .2s;
+}
+
+.main a:not(h1 a):hover::after,
+.footer a:not(.cc-link):hover::after {
+    right: 0;
+}
+
+.main img {
+    display: block;
+    margin: 20px auto 10px auto;
+    border-radius: 20px;
+    max-width: 100%;
+}
+
+.main label {
+    margin-top: 0px;
+    display: block;
+    text-align: center;
+    font-style: italic
+}
+
+.main code {
+    color: #373;
+}
+
+.main pre:has(code) {
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #eee;
+    margin: 0 30px;
+    position: relative;
+}
+
+.main pre:has(code) button {
+    top: 20px;
+    right: 20px;
+    position: absolute;
+    cursor: pointer;
+    background-color: #0000;
+    border: 0;
+    font-weight: 600;
+    color: #aaa;
+}
+
+.nav {
+    font-weight: 500;
+    background-color: #B9E6FFE0;
+    backdrop-filter: blur(3px);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    width: 100vw;
+    box-sizing: border-box;
+    z-index: 2;
+    height: 60px;
+    transition: .2s;
+    transition-property: height;
+}
+
+.nav.expanded {
+    height: 150px;
+}
+
+.nav.expanded h1 .name {
+    font-size: 2rem;
+}
+
+.nav.expanded h1 svg {
+    height: 2rem;
+}
+
+.nav:not(.expanded) .tagline {
+    font-size: 0;
+}
+
+.nav h1 {
+    color: #374A67;
+    text-shadow: 3px 2px #0002;
+    font-weight: 800;
+    margin: 0;
+    display: grid;
+    gap: 5px;
+    align-items: center;
+}
+
+.nav h1 svg {
+    grid-row: 1;
+    height: 1rem;
+    filter: drop-shadow(3px 2px #0002);
+}
+
+.nav h1 .name {
+    grid-row: 1;
+}
+
+.nav h1 .tagline {
+    grid-row: 2;
+    grid-column: 2;
+    margin-top: -5px;
+    font-size: 0.6em;
+}
+
+.nav-links {
+    text-transform: uppercase;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 5px;
+    transition: none;
+}
+
+.ham {
+    display: none;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: none;
+    padding: 0;
+    flex-direction: column;
+    justify-content: space-between;
+    transform: scale(75%);
+    filter: drop-shadow(3px 3px #0002);
+    cursor: pointer;
+}
+
+.ham i {
+    display: block;
+    background-color: #374A67;
+    width: 100%;
+    height: 5px;
+    transform-origin: 2.5px 50%;
+}
+
+.ham.open i:nth-child(1) {
+    width: 135%;
+    transform: rotate(45deg);
+}
+
+.ham.open i:nth-child(2) {
+    background-color: #0000;
+}
+
+.ham.open i:nth-child(3) {
+    width: 135%;
+    transform: rotate(-45deg);
+}
+
+@media screen and (max-width: 650px) {
+    .main {
+        left: 0;
+        width: 100%;
+        padding: 150px 30px 30px 30px;
+    }
+
+    .main pre:has(code) {
+        margin: 0;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 15px;
+        background-color: #63ADF2;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100vw;
+        position: fixed;
+        left: 120vw;
+        top: 60px;
+        transition: .2s;
+        transition-property: top, left;
+    }
+
+    .nav:has(.ham.open) .nav-links {
+        left: 0;
+    }
+
+    .nav.expanded .nav-links {
+        top: 150px;
+    }
+
+    .ham {
+        display: flex;
+    }
+}
+
+.nav a {
+    color: #000;
+    text-decoration: none;
+    padding: 5px 15px;
+    border-radius: 1000px;
+}
+
+.nav a:hover {
+    background-color: #F6BD60;
+}
+
+.footer {
+    background-color: #B9E6FFE0;
+    padding: 15px 20px;
+    width: 100vw;
+    box-sizing: border-box;
+    transition: none;
+}
