@@ -2,10 +2,7 @@
 
 * {
     transition: .3s;
-}
-
-html {
-    background-color: #55555a;
+    -webkit-transition: .3s;
 }
 
 body {
