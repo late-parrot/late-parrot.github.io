@@ -2,7 +2,6 @@
 
 * {
     transition: .3s;
-    -webkit-transition: .3s;
 }
 
 body {
@@ -44,7 +43,7 @@ body {
 .main h1 a {
     text-shadow: none;
     text-decoration: none;
-    filter: brightness(0) opacity(20%);
+    color: #666;
     font-weight: 300;
     font-size: .8em;
     position: absolute;
@@ -156,8 +155,6 @@ body {
     grid-row: 1;
     height: 2em;
     aspect-ratio: 1;
-    object-fit: cover;
-    object-position: 0 100%;
     border-radius: 50%;
     filter: drop-shadow(3px 2px #0002);
 }
