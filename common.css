@@ -1,30 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
-* {
-    transition: .3s;
+:root {
+    --bg-color: #33333a;
+    --main-color: #44444a;
+    --text-color: #aaa;
+    --dark-text-color: #55555a;
+    --link-color: #63ADF2;
+    --code-color: rgb(114, 196, 114);
+    --accent-color: #b68515;
+    --nav-color:  #55555ae0; //#233243e0;
 }
 
 body {
-    font-family: "Lexend", sans-serif;
-    font-weight: 300;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
     margin: 0;
     height: 100vh;
-    color: #aaa;
-    background-color: #33333a;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Lexend", sans-serif;
 }
 
 .main {
-    background-color: #44444a;
+    background-color: var(--main-color);
     min-height: 100%;
-    width: 80%;
+    width: 60%;
     position: relative;
-    left: 10%;
+    left: 20%;
     padding: 150px 100px 30px 100px;
     box-sizing: border-box;
 }
 
 .main h1 {
-    text-shadow: 3px 2px #55555a;
+    color: var(--accent-color);
     position: relative;
     margin: 40px 0;
 }
@@ -36,14 +48,14 @@ body {
     left: 2px;
     right: 50px;
     height: 2px;
-    background-color: #ddd;
-    box-shadow: 0 4px #55555a;
+    background-color: var(--accent-color);
+    box-shadow: 0 4px var(--dark-text-color);
 }
 
 .main h1 a {
     text-shadow: none;
     text-decoration: none;
-    color: #666;
+    color: var(--dark-text-color);
     font-weight: 300;
     font-size: .8em;
     position: absolute;
@@ -55,7 +67,7 @@ body {
 
 .main a:not(h1 a),
 .footer a {
-    color: #63ADF2;
+    color: var(--link-color);
     text-decoration: none;
     position: relative;
 }
@@ -63,7 +75,7 @@ body {
 .main a:not(h1 a)::after,
 .footer a:not(.cc-link)::after {
     content: '';
-    background-color: #63ADF2;
+    background-color: var(--link-color);
     position: absolute;
     bottom: 2px;
     left: 0;
@@ -92,7 +104,7 @@ body {
 }
 
 .main code {
-    color: rgb(114, 196, 114);
+    color: var(--code-color);
 }
 
 .main pre:has(code) {
@@ -117,7 +129,7 @@ body {
 
 .nav {
     font-weight: 500;
-    background-color: #55555aE0;
+    background-color: var(--nav-color);
     backdrop-filter: blur(3px);
     padding: 15px 20px;
     display: flex;
@@ -129,7 +141,7 @@ body {
     z-index: 2;
     height: 60px;
     transition: .2s;
-    transition-property: height;
+    transition-property: height, font-size;
 }
 
 .nav.expanded {
@@ -137,12 +149,20 @@ body {
     font-size: 1.5rem;
 }
 
+.nav .tagline {
+    line-height: 1em;
+    transition: .2s;
+    transition-property: opacity, line-height;
+}
+
 .nav:not(.expanded) .tagline {
-    font-size: 0;
+    //font-size: 0;
+    line-height: 0;
+    opacity: 0;
 }
 
 .nav h1 {
-    color: #757679;
+    color: var(--accent-color);;
     text-shadow: 3px 2px #0002;
     font-weight: 800;
     margin: 0;
@@ -195,6 +215,7 @@ body {
     border: none;
     background: none;
     padding: 0;
+    margin: 20px;
     flex-direction: column;
     justify-content: space-between;
     transform: scale(75%);
@@ -208,6 +229,7 @@ body {
     width: 100%;
     height: 5px;
     transform-origin: 2.5px 50%;
+    transition: .3s;
 }
 
 .ham.open i:nth-child(1) {
@@ -238,7 +260,7 @@ body {
     .nav-links {
         flex-direction: column;
         gap: 15px;
-        background-color: #444c53;
+        background-color: var(--nav-color); //#444c53;
         padding: 20px;
         box-sizing: border-box;
         width: 100vw;
@@ -263,18 +285,20 @@ body {
 }
 
 .nav a {
-    color: #aaaaaf;
+    color: #eeeeef;
+    font-weight: 600;
     text-decoration: none;
     padding: 5px 15px;
     border-radius: 1000px;
+    transition: .3s;
 }
 
 .nav a:hover {
-    background-color: #966515;
+    background-color: var(--accent-color);
 }
 
 .footer {
-    background-color: #55555aE0;
+    background-color: var(--nav-color);
     padding: 15px 20px;
     width: 100vw;
     box-sizing: border-box;
