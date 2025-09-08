@@ -116,6 +116,10 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
 }
 
+.hjls {
+    background: transparent !important;
+}
+
 .main pre:has(code) button {
     top: 20px;
     right: 20px;
