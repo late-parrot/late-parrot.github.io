@@ -5,6 +5,7 @@ document.querySelectorAll('.main h1').forEach((x) => {
     x.appendChild(node);
 });
 
+/*
 async function writeClipboardText(text) {
     try {
         await navigator.clipboard.writeText(text);
@@ -35,6 +36,7 @@ navigator.clipboard.readText().then(() => {
         x.appendChild(node);
     });
 }).catch(e => console.error('Clipboard API gave following error, disabling clipboard functionality: ' + e.message));
+*/
 
 addEventListener('scroll', () => {
     if (document.querySelector('html').scrollTop < 10) {
