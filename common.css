@@ -112,13 +112,13 @@ pre code.hljs {
     border-radius: 10px;
     padding: 20px !important;
     /* background-color: #4d4d4f;
-    margin: 0 30px; */
-    position: relative;
+    margin: 0 30px;
+    position: relative; */
 }
 
 /* .hjls {
     background: transparent !important;
-} */
+}
 
 .main pre:has(code) button {
     top: 20px;
@@ -129,7 +129,7 @@ pre code.hljs {
     border: 0;
     font-weight: 600;
     color: #aaa;
-}
+} */
 
 .nav {
     font-weight: 500;
