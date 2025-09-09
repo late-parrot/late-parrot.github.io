@@ -1,7 +1,11 @@
 document.querySelectorAll('.main h1').forEach((x) => {
     var node = document.createElement('a');
     node.href = '#' + x.id;
-    node.innerHTML = '§'; //🔗 works too, but needs font-size: .6em
+    var i = document.createElement('i');
+    i.classList.add("fa-regular");
+    i.classList.add("fa-section");
+    node.appendChild(i);
+    //node.innerHTML = '§'; //🔗 works too, but needs font-size: .6em
     x.appendChild(node);
 });
 
