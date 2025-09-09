@@ -108,11 +108,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 pre code.hljs {
-    border: 2px solid #575757;
+    /* border: 2px solid #575757; */
     border-radius: 10px;
     /* padding: 20px;
-    background-color: #4d4d4f; */
-    margin: 0 30px;
+    background-color: #4d4d4f;
+    margin: 0 30px; */
     position: relative;
 }
 
@@ -121,6 +121,7 @@ pre code.hljs {
 } */
 
 .main pre:has(code) button {
+    z-index: 99;
     top: 20px;
     right: 20px;
     position: absolute;
