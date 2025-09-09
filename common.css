@@ -110,7 +110,7 @@ h1, h2, h3, h4, h5, h6 {
 pre code.hljs {
     /* border: 2px solid #575757; */
     border-radius: 10px;
-    padding: 20px;
+    padding: 20px !important;
     /* background-color: #4d4d4f;
     margin: 0 30px; */
     position: relative;
