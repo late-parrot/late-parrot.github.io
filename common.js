@@ -2,12 +2,13 @@ document.querySelectorAll('.main h1').forEach((x) => {
     var node = document.createElement('a');
     node.href = '#' + x.id;
     var i = document.createElement('i');
-    i.classList.add("fa-regular");
-    i.classList.add("fa-section");
+    i.dataset.feather = 'link';
     node.appendChild(i);
     //node.innerHTML = '§'; //🔗 works too, but needs font-size: .6em
     x.appendChild(node);
 });
+
+feather.replace();
 
 /*
 async function writeClipboardText(text) {

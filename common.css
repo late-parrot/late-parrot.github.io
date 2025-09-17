@@ -7,9 +7,9 @@
     --text-color: #aaa;
     --dark-text-color: #55555a;
     --link-color: #63ADF2;
-    --code-color: #aaa /* rgb(114, 196, 114) */;
+    --code-color: #aaa;
     --accent-color: #b68515;
-    --nav-color:  #55555ae0; //#233243e0;
+    --nav-color:  #55555ae0;
 }
 
 body {
@@ -160,7 +160,6 @@ pre code.hljs {
 }
 
 .nav:not(.expanded) .tagline {
-    //font-size: 0;
     line-height: 0;
     opacity: 0;
 }
@@ -177,7 +176,7 @@ pre code.hljs {
 
 .nav h1 img {
     grid-row: 1;
-    height: 2em;
+    height: 1.75em;
     aspect-ratio: 1;
     border-radius: 50%;
     filter: drop-shadow(3px 2px #0002);
@@ -264,7 +263,7 @@ pre code.hljs {
     .nav-links {
         flex-direction: column;
         gap: 15px;
-        background-color: var(--nav-color); //#444c53;
+        background-color: var(--nav-color);
         padding: 20px;
         box-sizing: border-box;
         width: 100vw;
