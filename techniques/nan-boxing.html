@@ -58,7 +58,7 @@ typedef struct {
       <p>This approach is fine, but it's not anywhere near space efficient, which can definitely matter in the world of cache hits and optimization, especially if many of these values are used.</p>
       <p>First, the struct has to contain a few bytes for the type. This isn't terrible, but it's also not neccesary, as we're about to see. Second, the values take up 8 bytes (The size of the largest values in the union), which means the compiler will add padding between the tag and the value for alignment reasons. This results in something like this:</p>
       <pre><code>[][][][] [][][][] [][][][][][][][]
-tag    padding       value</code></pre>
+tag      padding       value</code></pre>
       <p>That's right. Our values take up 16 bytes, <em>half</em> of which is from the tag and its padding. Our tags take up as much memory as our values.</p>
       <p>As I mentioned before, this is fine for small or non-performance heavy programs, but if these values are on hot paths or if there's a huge number of them, it's really not ideal for half of that storage to be a simple <em>type tag</em>.</p>
       <p>Fortunately, there's an easy fix for this: NaN boxing. but in order to understand NaN boxing, we first need to understand NaN.</p>
