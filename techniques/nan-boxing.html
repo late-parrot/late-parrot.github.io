@@ -40,7 +40,92 @@
     </nav>
     <main class="main">
       <h1 id="nan-boxing">NaN Boxing</h1>
-      <p>Lorem ipsum</p>
+      <p>This is a low-level technique that I learned about while learning about writing programming languages using Robert Nystrom's wonderful book <a href="https://craftinginterpreters.com/optimization.html#nan-boxing">Crafting Interpreters</a>. I'll try to stay away from programming languages in this article, but these are probably the main use case for this kind of technique.</p>
+      <p>The basic idea is that we want to store multiple kinds of values for some program. We need to be able to tell what kind of value something is, as well as what that value is. Usually, this is achieved using a tagged union, like so (code in this article is shown in C, but can be extended to any low-level language):</p>
+      <pre><code>typedef enum {
+    NUMBER, BOOLEAN, POINTER, EMPTY
+} ValueType;
+
+typedef struct {
+    ValueType type;
+    union {
+        double number;
+        bool bool;
+        void* pointer;
+    } as;
+} Value;</code></pre>
+      <p>Using <code>as</code> for the union name is a neat trick, it lets you pull values from the union in a way a bit like a cast: <code>value.as.integer</code></p>
+      <p>This approach is fine, but it's not anywhere near space efficient, which can definitely matter in the world of cache hits and optimization, especially if many of these values are used.</p>
+      <p>First, the struct has to contain a few bytes for the type. This isn't terrible, but it's also not neccesary, as we're about to see. Second, the values take up 8 bytes (The size of the largest values in the union), which means the compiler will add padding between the tag and the value for alignment reasons. This results in something like this:</p>
+      <pre><code>[][][][] [][][][] [][][][][][][][]
+tag    padding       value</code></pre>
+      <p>That's right. Our values take up 16 bytes, <em>half</em> of which is from the tag and its padding. Our tags take up as much memory as our values.</p>
+      <p>As I mentioned before, this is fine for small or non-performance heavy programs, but if these values are on hot paths or if there's a huge number of them, it's really not ideal for half of that storage to be a simple <em>type tag</em>.</p>
+      <p>Fortunately, there's an easy fix for this: NaN boxing. but in order to understand NaN boxing, we first need to understand NaN.</p>
+      <h1 id="ieee-nan">IEEE NaN</h1>
+      <p>If you arent already familiar, the IEEE 754 douple-precision floating point standard looks something like this:</p>
+      <pre><code>[] [][][][][][][][][][][] [][][][]...[][][][]
+^     11 exponent bits      52 mantissa bits
+|_ sign bit</code></pre>
+      <p>This is 64 bits total, so if we can find a way to squeeze all our values in here, we can cut their size in half. Spoiler alert: we can totally do this.</p>
+      <p>If all 11 exponent bits are set, then the value is called "NaN", or "Not a Number". IEEE 754 provides a very detailed explanation of different kinds of NaN. That may sound weird, because NaN is just supposed to be a simple value for when the result of a calculation doesn't make sense as a number. But that's not all NaN is. Values like <code>inf</code> and <code>-inf</code> are stored using the NaN system, so NaN isn't just a simple construct.</p>
+      <p>There are actually two very different kinds of NaN: signalling and quiet NaNs. Signalling NaNs are meant to represent some kind of error or important construct (The infinities are signalling NaNs). Quiet NaNs, however, are kind of just... left for you to play with. The more astute among you may already see where this is going. What bits do we actually have to use for what we need?</p>
+      <p>Well, NaNs all have all 11 of the exponent bits set, and quiet NaNs all have the first mantissa bit set. Additionally, we can set the second mantissa bit to 1 to avoid special values on some Intel systems. This is 13 bits of the 64 bit double, giving us 50 mantissa bits and the sign bit to use for whatever we want.</p>
+      <p>We can do a lot with 51 bits.</p>
+      <h1 id="the-fun-part">The Fun Part</h1>
+      <p>All of our values will be stored in 64 bits.</p>
+      <pre><code>typedef uint64_t Value;</code></pre>
+      <p>Integers are much easier when it comes to working with raw bits, so even though it's really a double, we can pass it around like this. Now that we know floating point numbers have a whole 51 bits we can repurpose for whatever we want, we can use this to our advantage. For doubles, we can simply keep them as-is. Every other value will be stored in the 51 open NaN bits, but floating point numbers already obviously have representations. We need a bit of coaxing to get C to accept that we want to turn an unsigned integer into a double and back, but it will let us.</p>
+      <pre><code>Value numToValue(double num) {
+    Value value;
+    memcpy(&value, &num, sizeof(double));
+    return value;
+}</code></pre>
+      <p>I know, that <code>memcpy</code> looks painfully slow. Thankfully, it's almost guaranteed to be optimized out of the program.</p>
+      <pre><code>double valueToNum(Value value) {
+    double num;
+    memcpy(&num, &value, sizeof(Value));
+    return num;
+}</code></pre>
+      <pre><code>bool isNum(Value value) {
+    return ((value) & QNAN) != QNAN; // If the value doesn't have all the QNAN bits, it must be a real double.
+}</code></pre>
+      <p>Great. So now we can store doubles, like doubles are supposed to. Where's the fun part? We can put those boolean values and our empty/<code>null</code> value in now. All we have to do is use a quiet NaN and put some small tag in the mantissa&em;say <code>01</code> for empty, <code>10</code> for <code>false</code>, and <code>11</code> for <code>true</code>. This seems like a good use for the preprocessor.</p>
+      <pre><code>#define QNAN ((uint64_t)0x7ffc000000000000)
+#define SIGN_BIT ((uint64_t)0x8000000000000000)
+#define TAG_EMPTY 1 // 01
+#define TAG_FALSE 2 // 10
+#define TAG_TRUE 3 // 11</code></pre>
+      <p>Now we can use a bit of binary logic to create the values. Again, macros are great here.</p>
+      <pre><code>
+#define VAL_EMPTY ((Value)(uint64_t)(QNAN | TAG_EMPTY))
+#define VAL_FALSE ((Value)(uint64_t)(QNAN | TAG_FALSE))
+#define VAL_TRUE ((Value)(uint64_t)(QNAN | TAG_TRUE))</code></pre>
+      <p>Conversion from booleans to <code>Value</code>s and back is then trivial:</p>
+      <pre><code>Value boolToValue(bool boolean) {
+    return boolean ? TRUE_VAL : FALSE_VAL;
+}</code></pre>
+      <pre><code>bool valueToBool(Value value) {
+    return value == TRUE_VAL; // If it's not true, it must be false!
+}</code></pre>
+      <pre><code>bool isBool(Value value) {
+    return value == TRUE_VAL || value == FALSE_VAL;
+}</code></pre>
+      <p>Empty values are much the same, but there's only one, so we only need the check function.</p>
+      <pre><code>bool isEmpty(Value value) {
+    return value == EMPTY_VAL;
+}</code></pre>
+      <p>All we have left are pointers (After we do these you can probably figure out ways to do whatever other types you want in addition). You may have noticed that one of our free bits, the sign bit, has remained untouched. This lets us make pointers remarkably simple&em;if the sign bit is set, it's a pointer. You may notice a problem here. Aren't pointers 64 bits? How can we stuff them into the 50 bits on the mantissa? Pointers <em>say</em> they're 64 bits, but they're really never more than 48. We can take advantage of this and simply mask off the quiet NaN bits to make it a valid pointer.</p>
+      <pre><code>Value ptrToValue(void* ptr) {
+    return (Value)(SIGN_BIT | QNAN | (uint64_t)(uintptr_t)(ptr)); // Some weird casting, but really just masks.
+}</code></pre>
+      <pre><code>void* valueToPtr(Value value) {
+    return (void*)(uintptr_t)((value) & ~(SIGN_BIT | QNAN)); // Mask off QNAN and the sign bit.
+}</code></pre>
+      <pre><code>bool isPtr(Value value) {
+    return ((value) & (QNAN | SIGN_BIT)) == (QNAN | SIGN_BIT); // If it has both masks, it must be a pointer.
+}</code></pre>
+      <p>At this point, we can store literally any value in these 64 bits, with 0 overhead and we have functions to manipulate those values. As always, the code in this article is CC0, and the text is under CC-BY-SA 4.0. This means you can do whatever the hell you want with the code snippets, but you have to follow some rules with my writing. See the footer for more details. If you've read this far, good job! I hope you come back and read through some other techniques!</p>
     </main>
     <footer class="footer">
       <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">Portions of this website Copyright &copy; 2025 <span property="cc:attributionName">Eric Schuette</span> under <a href="https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;" class="cc-link">CC BY-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a><br>Some rights reserved.</p>
