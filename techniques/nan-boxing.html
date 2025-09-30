@@ -90,7 +90,7 @@ tag      padding       value</code></pre>
       <pre><code>bool isNum(Value value) {
     return ((value) & QNAN) != QNAN; // If the value doesn't have all the QNAN bits, it must be a real double.
 }</code></pre>
-      <p>Great. So now we can store doubles, like doubles are supposed to. Where's the fun part? We can put those boolean values and our empty/<code>null</code> value in now. All we have to do is use a quiet NaN and put some small tag in the mantissa&em;say <code>01</code> for empty, <code>10</code> for <code>false</code>, and <code>11</code> for <code>true</code>. This seems like a good use for the preprocessor.</p>
+      <p>Great. So now we can store doubles, like doubles are supposed to. Where's the fun part? We can put those boolean values and our empty/<code>null</code> value in now. All we have to do is use a quiet NaN and put some small tag in the mantissa&mdash;say <code>01</code> for empty, <code>10</code> for <code>false</code>, and <code>11</code> for <code>true</code>. This seems like a good use for the preprocessor.</p>
       <pre><code>#define QNAN ((uint64_t)0x7ffc000000000000)
 #define SIGN_BIT ((uint64_t)0x8000000000000000)
 #define TAG_EMPTY 1 // 01
@@ -115,7 +115,7 @@ tag      padding       value</code></pre>
       <pre><code>bool isEmpty(Value value) {
     return value == EMPTY_VAL;
 }</code></pre>
-      <p>All we have left are pointers (After we do these you can probably figure out ways to do whatever other types you want in addition). You may have noticed that one of our free bits, the sign bit, has remained untouched. This lets us make pointers remarkably simple&em;if the sign bit is set, it's a pointer. You may notice a problem here. Aren't pointers 64 bits? How can we stuff them into the 50 bits on the mantissa? Pointers <em>say</em> they're 64 bits, but they're really never more than 48. We can take advantage of this and simply mask off the quiet NaN bits to make it a valid pointer.</p>
+      <p>All we have left are pointers (After we do these you can probably figure out ways to do whatever other types you want in addition). You may have noticed that one of our free bits, the sign bit, has remained untouched. This lets us make pointers remarkably simple&mdash;if the sign bit is set, it's a pointer. You may notice a problem here. Aren't pointers 64 bits? How can we stuff them into the 50 bits on the mantissa? Pointers <em>say</em> they're 64 bits, but they're really never more than 48. We can take advantage of this and simply mask off the quiet NaN bits to make it a valid pointer.</p>
       <pre><code>Value ptrToValue(void* ptr) {
     return (Value)(SIGN_BIT | QNAN | (uint64_t)(uintptr_t)(ptr)); // Some weird casting, but really just masks.
 }</code></pre>
